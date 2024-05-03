@@ -57,7 +57,9 @@
             "",
             [
               "arn:aws:apigateway:",
-              "us-east-1:",
+              {
+                "Ref": "AWS::Region"
+              },
               "lambda:",
               "path",
               "/2015-03-31/functions/",
@@ -165,7 +167,9 @@
               "",
               [
                 "arn:aws:apigateway:",
-                "us-east-1:",
+                {
+                  "Ref": "AWS::Region"
+                },
                 "lambda:",
                 "path",
                 "/2015-03-31/functions/",
@@ -208,7 +212,9 @@
               "",
               [
                 "arn:aws:apigateway:",
-                "us-east-1:",
+                {
+                  "Ref": "AWS::Region"
+                },
                 "lambda:",
                 "path",
                 "/2015-03-31/functions/",
@@ -251,7 +257,9 @@
               "",
               [
                 "arn:aws:apigateway:",
-                "us-east-1:",
+                {
+                  "Ref": "AWS::Region"
+                },
                 "lambda:",
                 "path",
                 "/2015-03-31/functions/",
@@ -294,7 +302,9 @@
               "",
               [
                 "arn:aws:apigateway:",
-                "us-east-1:",
+                {
+                  "Ref": "AWS::Region"
+                },
                 "lambda:",
                 "path",
                 "/2015-03-31/functions/",
@@ -340,7 +350,9 @@
               "",
               [
                 "arn:aws:apigateway:",
-                "us-east-1:",
+                {
+                  "Ref": "AWS::Region"
+                },
                 "lambda:",
                 "path",
                 "/2015-03-31/functions/",
@@ -386,7 +398,9 @@
               "",
               [
                 "arn:aws:apigateway:",
-                "us-east-1:",
+                {
+                  "Ref": "AWS::Region"
+                },
                 "lambda:",
                 "path",
                 "/2015-03-31/functions/",
