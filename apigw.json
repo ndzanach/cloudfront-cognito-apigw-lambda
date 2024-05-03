@@ -74,7 +74,7 @@
           ]
         },
         "Type": "TOKEN",
-        "IdentitySource": "method.request.header.ATnamoneict",
+        "IdentitySource": "method.request.header.TOKEN_NAME",
         "Name": "PROJECT_NAME_Authorizer",
         "RestApiId": {
           "Ref": "RestApi"
