@@ -60,7 +60,7 @@ zip -r -q $LAMBDA_LAYER_ZIP_NAME.zip python # We use tool called ZiP but feel fr
 # echo '======== (OPTIONAL) DELETING PRE-EXISTING LAMBDA LAYER ========'
 # aws s3 rm s3://$LAMBDA_LAYER_S3BUCKET_NAME/ --recursive --region $AWS_REGION --profile $AWS_PROFILE # (Optional) Delete all pre-existing lamba layer 
 
-echo '======== UPLADING LAMBA TO LAMBDA_LAYER_S3BUCKET_NAME ========'
+echo '======== UPLOADING LAMBA ZIP LAYER TO LAMBDA_LAYER_S3BUCKET_NAME ========'
 aws s3 cp $LAMBDA_LAYER_ZIP_NAME.zip "s3://$LAMBDA_LAYER_S3BUCKET_NAME/" --storage-class STANDARD --region $AWS_REGION --profile $AWS_PROFILE 
 
 # echo '======== (OPTIONAL) COPY LAMBDA LAYER ACCROSS TO ANOTHER BUCKET ========'
