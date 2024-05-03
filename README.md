@@ -30,6 +30,7 @@ Note that **"PROJECT_NAME_"** is used throughout the json templates as place hol
 
 
 ### Cloudfront
+- HostedZoneId: Z2FDTNDATAQYW2 - Default ID for Cloudfront 
 
 
 ### Api Gateway
