@@ -1,0 +1,805 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "PROJECT_NAME_ api gateway",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Resources": {
+    "RestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Description": "PROJECT_NAME_",
+        "Name": "PROJECT_NAME_ApiGw",
+        "ApiKeySourceType": "HEADER",
+        "EndpointConfiguration": {
+          "Types": [
+            "EDGE"
+          ]
+        },
+        "BinaryMediaTypes": [
+          "*/*"
+        ],
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ]
+      }
+    },
+    "GatewayResponse": {
+      "Type": "AWS::ApiGateway::GatewayResponse",
+      "Properties": {
+        "ResponseParameters": {
+          "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+          "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
+        },
+        "ResponseTemplates": {
+          "application/json": "{\n  \"success\": false,\n  \"message\": \"$context.authorizer.stringKey\"\n}"
+        },
+        "ResponseType": "ACCESS_DENIED",
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "StatusCode": "403"
+      }
+    },
+    "Authorizer": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "AuthorizerCredentials": {
+          "Fn::GetAtt": [
+            "Role",
+            "Arn"
+          ]
+        },
+        "AuthorizerResultTtlInSeconds": "0",
+        "AuthorizerUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:apigateway:",
+              "us-east-1:",
+              "lambda:",
+              "path",
+              "/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "PROJECT_NAME_Function",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        },
+        "Type": "TOKEN",
+        "IdentitySource": "method.request.header.ATnamoneict",
+        "Name": "PROJECT_NAME_Authorizer",
+        "RestApiId": {
+          "Ref": "RestApi"
+        }
+      }
+    },
+    "authResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "PathPart": "auth",
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "RestApi",
+            "RootResourceId"
+          ]
+        }
+      }
+    },
+    "authProxyResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "authResource",
+            "ResourceId"
+          ]
+        }
+      }
+    },
+    "queryResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "PathPart": "query",
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "RestApi",
+            "RootResourceId"
+          ]
+        }
+      }
+    },
+    "queryProxyResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "queryResource",
+            "ResourceId"
+          ]
+        }
+      }
+    },
+    "authOptionsMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "DependsOn": [
+        "PROJECT_NAME_Function"
+      ],
+      "Properties": {
+        "ApiKeyRequired": false,
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "authProxyResource",
+            "ResourceId"
+          ]
+        },
+        "HttpMethod": "OPTIONS",
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                "us-east-1:",
+                "lambda:",
+                "path",
+                "/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PROJECT_NAME_Function",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "authGetMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "DependsOn": [
+        "PROJECT_NAME_Function"
+      ],
+      "Properties": {
+        "ApiKeyRequired": false,
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "authProxyResource",
+            "ResourceId"
+          ]
+        },
+        "HttpMethod": "GET",
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                "us-east-1:",
+                "lambda:",
+                "path",
+                "/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PROJECT_NAME_Function",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "authPostMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "DependsOn": [
+        "PROJECT_NAME_Function"
+      ],
+      "Properties": {
+        "ApiKeyRequired": false,
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "authProxyResource",
+            "ResourceId"
+          ]
+        },
+        "HttpMethod": "POST",
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                "us-east-1:",
+                "lambda:",
+                "path",
+                "/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PROJECT_NAME_Function",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "queryOptionsMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "DependsOn": [
+        "PROJECT_NAME_Function"
+      ],
+      "Properties": {
+        "ApiKeyRequired": false,
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "queryProxyResource",
+            "ResourceId"
+          ]
+        },
+        "HttpMethod": "OPTIONS",
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                "us-east-1:",
+                "lambda:",
+                "path",
+                "/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PROJECT_NAME_Function",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "queryGetMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "DependsOn": [
+        "PROJECT_NAME_Function"
+      ],
+      "Properties": {
+        "ApiKeyRequired": false,
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "queryProxyResource",
+            "ResourceId"
+          ]
+        },
+        "HttpMethod": "GET",
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId":{
+          "Ref": "Authorizer"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                "us-east-1:",
+                "lambda:",
+                "path",
+                "/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PROJECT_NAME_Function",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "queryPostMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "DependsOn": [
+        "PROJECT_NAME_Function"
+      ],
+      "Properties": {
+        "ApiKeyRequired": false,
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "queryProxyResource",
+            "ResourceId"
+          ]
+        },
+        "HttpMethod": "POST",
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId":{
+          "Ref": "Authorizer"
+        },
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                "us-east-1:",
+                "lambda:",
+                "path",
+                "/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PROJECT_NAME_Function",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "deployment": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "DependsOn": [
+        "authOptionsMethod",
+        "authGetMethod",
+        "authPostMethod",
+        "queryOptionsMethod",
+        "queryGetMethod",
+        "queryPostMethod"
+      ],
+      "Properties": {
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "Description": "PROJECT_NAME_"
+      }
+    },
+    "CloudWatchRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "apigateway.amazonaws.com"
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+        ]
+      }
+    },
+    "Account": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "CloudWatchRole",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "LogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "RestApi"
+              },
+              "access-logs"
+            ]
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ]
+      }
+    },
+    "StageLive": {
+      "Type": "AWS::ApiGateway::Stage",
+      "DependsOn": [
+        "CloudWatchRole"
+      ],
+      "Properties": {
+        "StageName": "live",
+        "Description": "live",
+        "MethodSettings": [
+          {
+            "LoggingLevel": "INFO",
+            "MetricsEnabled": true,
+            "ResourcePath": "/*",
+            "HttpMethod": "*"
+          }
+        ],
+        "AccessLogSetting": {
+          "DestinationArn": {
+            "Fn::GetAtt": [
+              "LogGroup",
+              "Arn"
+            ]
+          },
+          "Format": "$context.extendedRequestId $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] $context.httpMethod $context.resourcePath $context.protocol $context.status $context.responseLength $context.requestId"
+        },
+        "DeploymentId": {
+          "Ref": "deployment"
+        },
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ]
+      }
+    },
+    "Certificate": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName": "api.PROJECT_NAME_.com",
+        "DomainValidationOptions": [
+          {
+            "DomainName": "api.PROJECT_NAME_.com",
+            "HostedZoneId": "ROUTE53_HOSTED_ZONE_ID"
+          }
+        ],
+        "ValidationMethod": "DNS",
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ]
+      }
+    },
+    "DomainNameApiGateWay": {
+      "Type": "AWS::ApiGateway::DomainName",
+      "DependsOn": [
+        "Certificate"
+      ],
+      "Properties": {
+        "DomainName": "api.PROJECT_NAME_.com",
+        "CertificateArn": {
+          "Ref": "Certificate"
+        },
+        "EndpointConfiguration": {
+          "Types": [
+            "EDGE"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ]
+      }
+    },
+    "BasePathMapping": {
+      "Type": "AWS::ApiGateway::BasePathMapping",
+      "Properties": {
+        "DomainName": {
+          "Ref": "DomainNameApiGateWay"
+        },
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "Stage": {
+          "Ref": "StageLive"
+        }
+      }
+    },
+    "Usageplan": {
+      "Type": "AWS::ApiGateway::UsagePlan",
+      "Properties": {
+        "ApiStages": [
+          {
+            "ApiId": {
+              "Ref": "RestApi"
+            },
+            "Stage": {
+              "Ref": "StageLive"
+            }
+          }
+        ],
+        "Description": "PROJECT_NAME_ Usage Plan",
+        "Quota": {
+          "Limit": 1000,
+          "Period": "MONTH"
+        },
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ],
+        "Throttle": {
+          "BurstLimit": 1000,
+          "RateLimit": 1000
+        },
+        "UsagePlanName": "PROJECT_NAME_ApiUsagePlan"
+      }
+    },
+    "Route53RecordSetGroup": {
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneId": "ROUTE53_HOSTED_ZONE_ID",
+        "RecordSets": [
+          {
+            "Name": "api.PROJECT_NAME_.com",
+            "Type": "A",
+            "AliasTarget": {
+              "EvaluateTargetHealth": false,
+              "HostedZoneId": "Z2FDTNDATAQYW2",
+              "DNSName": {
+                "Fn::GetAtt": [
+                  "DomainNameApiGateWay",
+                  "DistributionDomainName"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "PROJECT_NAME_Function": {
+      "Type": "AWS::Serverless::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AutoPublishAlias": "Live",
+        "CodeUri": "lambda/",
+        "Handler": "app.main.handler",
+        "Runtime": "python3.12",
+        "FunctionName": "PROJECT_NAME_FastApi",
+        "PackageType": "Zip",
+        "Architectures": [
+          "x86_64"
+        ],
+        "Timeout": 60,
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "Role",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          {
+            "Ref": "LayerVersion"
+          }
+        ],
+        "Tags": {
+          "Key": "project",
+          "Value": "PROJECT_NAME_"
+        }
+      }
+    },
+    "LayerVersion": {
+      "Type": "AWS::Serverless::LayerVersion",
+      "Properties": {
+        "CompatibleArchitectures": [
+          "x86_64"
+        ],
+        "CompatibleRuntimes": [
+          "python3.12"
+        ],
+        "ContentUri": "s3://LAMBDA_LAYER_S3BUCKET_NAME/LAMBDA_LAYER_ZIP_NAME.zip",
+        "Description": "My Lambda Layer",
+        "LayerName": "PROJECT_NAME_Lambda_Layer",
+        "LicenseInfo": "Available under the MIT-0 license.",
+        "RetentionPolicy": "Retain"
+      }
+    },
+    "Role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "lambda.amazonaws.com",
+                "edgelambda.amazonaws.com",
+                "apigateway.amazonaws.com"
+              ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }
+        },
+        "Path": "/",
+        "RoleName": "PROJECT_NAME_ApiGWRole",
+        "Tags": [
+          {
+            "Key": "project",
+            "Value": "PROJECT_NAME_"
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "PROJECT_NAME_ApiGWPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:GetFunction",
+                    "lambda:EnableReplication*",
+                    "lambda:PublishLayerVersion",
+                    "lambda:InvokeFunction",
+                    "iam:CreateServiceLinkedRole",
+                    "cloudfront:UpdateDistribution",
+                    "cloudfront:CreateDistribution",
+                    "cloudfront:GetFunction",
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:Scan",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "ssm:GetParameter",
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ssm:GetParameter",
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ssm:GetParameter",
+                    "ses:SendEmail",
+                    "ses:SendRawEmail",
+                    "ses:SendTemplatedEmail",
+                    "ses:SendBulkTemplatedEmail",
+                    "cognito-identity:Describe*",
+                    "cognito-identity:Get*",
+                    "cognito-identity:List*",
+                    "cognito-idp:Describe*",
+                    "cognito-idp:AdminGet*",
+                    "cognito-idp:AdminList*",
+                    "cognito-idp:List*",
+                    "cognito-idp:Get*",
+                    "cognito-idp:AdminConfirmSignUp",
+                    "cognito-idp:AdminDisableUser",
+                    "cognito-idp:AdminDeleteUser",
+                    "cognito-idp:AdminUserGlobalSignOut"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "PROJECT_NAME_Function"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:"
+              },
+              {
+                "Ref": "RestApi"
+              },
+              "/*/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "PROJECT_NAME_tableDynamoDB": {
+      "Type": "AWS::Serverless::SimpleTable",
+      "Properties": {
+        "TableName": "PROJECT_NAME_table",
+        "PrimaryKey": {
+          "Name": "id",
+          "Type": "String"
+        },
+        "Tags": {
+          "Key": "project",
+          "Value": "PROJECT_NAME_"
+        }
+      }
+    }
+  }
+}
